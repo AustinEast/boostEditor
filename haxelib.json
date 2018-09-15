@@ -1,0 +1,17 @@
+{
+    "name": "boostEditor",
+    "url" : "https://github.com/AustinEast/boostflx",
+    "license": "MIT",
+    "tags": ["flixel"],
+    "description": "Editors For Haxeflixel Games",
+    "version": "0.0.1",
+    "classPath": "source/",
+    "releasenote": "we're new here, please send help",
+    "contributors": ["AustinEast"],
+    "dependencies": {
+      "flixel": "",
+      "boostflx": "",
+      "djFlixel": "",
+      "zerolib": ""
+    }
+  }

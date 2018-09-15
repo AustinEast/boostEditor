@@ -1,0 +1,30 @@
+{
+	"sys" : {
+		"NAME" : "Boost Editor",
+		"VERSION" : "0.1",
+		"ANTIALIASING" : false,
+		"FPS": 60,
+		"FULLSCREEN" : false,
+		"VOLUME" : 0.6
+	},
+	"editor": {
+		"menu": {
+			"style": {
+				"font": "fonts/eighties",
+				"fontSize": 16,
+				"color": "0xfffcbd90",
+				"color_focused": "0xff80d99b",
+				"color_accent": "0xffde76a5",
+				"color_border": "0xff584478",
+				"border_size": 1,
+				"el_padding": -5,
+				"icons": {
+					"size": 8
+				},
+				"scrollInd": {
+					"offset": [3, 3]
+				}
+			}
+		}
+	}
+}

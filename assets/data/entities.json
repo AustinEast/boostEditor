@@ -1,0 +1,54 @@
+{
+    "tags": ["Default"], 
+    "list": [
+        {
+            "name": "",
+            "entityClass": "Entity",
+            "tag": 0,
+            "stats": {
+                "acceleration": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0
+                },
+                "gravity": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0
+                },
+                "maxVelocity": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0
+                },
+                "drag": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0
+                },
+                "health":10,
+                "attack":1,
+                "defense":0
+            },
+            "size": {
+                "width": 16,
+                "height": 16,
+                "depth": 16,
+                "offset": {
+                    "x": 0,
+                    "y": 0
+                }
+            },
+            "graphic": {
+                "asset": "assets/pathto/image.png",
+                "animated": false,
+                "billboard": false,
+                "width": 16,
+                "height": 16,
+                "sliced": false,
+                "slices": 1
+            },
+            "animations": []
+        }
+    ] 
+}
