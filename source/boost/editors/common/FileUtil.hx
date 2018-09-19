@@ -1,5 +1,6 @@
 package boost.editors.common;
 
+import djFlixel.gui.Toast;
 import lime.ui.FileDialogType;
 import lime.ui.FileDialog;
 import boost.system.DataTypes;
@@ -15,29 +16,40 @@ class FileUtil {
 	public static var levels:Array<LevelData>;
 	public static var entities:Array<EntityData>;
 	public static var tags:Array<String>;
+	public static var xml_path:String = 'Project.xml';
 	public static var data_path:String = 'assets/data/';
 	public static var project_path:String;
-	static var initialized:Bool;
+	static var initialized:Bool = false;
 
 	public static function init(?callback:Void->Void) {
+		if (initialized) {
+			if (callback != null)
+				callback();
+			return;
+		}
 		#if (STANDALONE)
 		var fd = new FileDialog();
 		fd.onSelect.add((path) -> {
 			project_path = path;
-			file_check();
-			// Load Levels JSON
-			var json = File.getContent(project_path + data_path + "levels.json");
-			levels = Json.parse(json);
-			// Load Entitites JSON
-			json = File.getContent(project_path + data_path + "entities.json");
-			var ej = Json.parse(json);
-			tags = ej.tags;
-			entities = ej.list;
-			initialized = true;
-			if (callback != null)
-				callback();
+			// Check if actually a haxeflixel project
+			if (FileSystem.exists(project_path + xml_path)) {
+				file_check();
+				// Load Levels JSON
+				var json = File.getContent(project_path + data_path + "levels.json");
+				levels = Json.parse(json);
+				// Load Entitites JSON
+				json = File.getContent(project_path + data_path + "entities.json");
+				var ej = Json.parse(json);
+				tags = ej.tags;
+				entities = ej.list;
+				initialized = true;
+				if (callback != null)
+					callback();
+			} else {
+				BaseState.i.toast.fire("Project not Found");
+			}
 		});
-		fd.browse(OPEN_DIRECTORY);
+		fd.browse(OPEN_DIRECTORY, null, null, "Open the HaxeFlixel Project");
 		#elseif (EXTERNAL_LOAD)
 		project_path = MacroHelp.getProjectPath();
 		file_check();
@@ -78,6 +90,7 @@ class FileUtil {
 		#if sys
 		GameLog.LOG('Saving levels.json...', INFO);
 		File.saveContent(project_path + data_path + "levels.json", Json.stringify(levels, null, "  "));
+		BaseState.i.toast.fire("Levels Saved");
 		#else
 		GameLog.LOG('No access to sys module, cannot save.', INFO);
 		#end
@@ -90,20 +103,21 @@ class FileUtil {
 		#if sys
 		GameLog.LOG('Saving entities.json...', INFO);
 		File.saveContent(project_path + data_path + "entities.json", Json.stringify({list: entities, tags: tags}, null, "  "));
+		BaseState.i.toast.fire("Entities Saved");
 		#else
 		GameLog.LOG('No access to sys module, cannot save.', INFO);
 		#end
 	}
 
-	static function init_check():Bool {
+	public static function init_check():Bool {
 		if (!initialized) {
-			GameLog.LOG('FileUtil not Initialized, run FileUtil.init() before using it.', ERROR);
+			// GameLog.LOG('FileUtil not Initialized, run FileUtil.init() before using it.', ERROR);
 			return false;
 		} else
 			return true;
 	}
 
-	static function file_check():Void {
+	public static function file_check():Void {
 		if (!FileSystem.exists(project_path + data_path + "levels.json"))
 			File.saveContent(project_path + data_path + "levels.json", Json.stringify([]));
 		if (!FileSystem.exists(project_path + data_path + "entities.json"))

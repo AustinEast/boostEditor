@@ -1,5 +1,7 @@
 package boost.editors.common.ui;
 
+import flixel.FlxBasic;
+import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.FlxCamera;
 import djFlixel.gui.PanelPop;
 import flixel.addons.ui.FlxUIInputText;
@@ -37,11 +39,6 @@ class Dialog extends PanelPop {
 		button = new FlxButton(0, 0, "OK", close);
 		// button.width = width.quarter();
 		button.exists = false;
-
-		FlxG.state.add(this);
-		FlxG.state.add(header);
-		FlxG.state.add(input);
-		FlxG.state.add(button);
 	}
 
 	@:noCompletion
@@ -50,6 +47,13 @@ class Dialog extends PanelPop {
 		input.camera = Value;
 		button.camera = Value;
 		return super.set_camera(Value);
+	}
+
+	public function add_all(group:FlxTypedGroup<FlxBasic>) {
+		group.add(this);
+		group.add(header);
+		group.add(input);
+		group.add(button);
 	}
 
 	public function init() {}

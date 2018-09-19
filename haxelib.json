@@ -1,8 +1,8 @@
 {
-    "name": "boostEditor",
-    "url" : "https://github.com/AustinEast/boostflx",
+    "name": "boostflx-editor",
+    "url" : "https://github.com/AustinEast/boostflx-editor",
     "license": "MIT",
-    "tags": ["flixel"],
+    "tags": ["flixel", "boostflx"],
     "description": "Editors For Haxeflixel Games",
     "version": "0.0.1",
     "classPath": "source/",

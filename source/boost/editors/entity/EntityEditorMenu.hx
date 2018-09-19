@@ -6,11 +6,7 @@ import boost.util.DataUtil;
 import flixel.FlxCamera;
 import djFlixel.gui.FlxMenu;
 import djFlixel.tool.DataTool;
-import zero.flxutil.util.GameLog;
 
-using boost.loaders.EntityLoader;
-using zero.ext.FloatExt;
-using zero.ext.StringExt;
 using flixel.util.FlxStringUtil;
 
 class EntityEditorMenu extends FlxMenu {
@@ -26,7 +22,7 @@ class EntityEditorMenu extends FlxMenu {
 		super(X, Y, WIDTH, SlotsTotal);
 		camera = Camera;
 		EntityEditorState.i.add(this);
-		DataTool.copyFieldsC(FLS.JSON.editor.menu.style, styleMenu);
+		DataTool.copyFieldsC(FLS.JSON.editor.entity.style, styleMenu);
 		init_pages();
 		init_callbacks();
 	}
@@ -36,7 +32,7 @@ class EntityEditorMenu extends FlxMenu {
 		p.link("Load Entity", "@entity-list", () -> goto(new_entity_list(), false));
 		p.link("New Entity", "@entity", () -> {
 			EntityEditorState.i.current_entity = FileUtil.entities.length;
-			EntityEditorState.i.animationsData = [];
+			update_entity();
 			update_entity_menu(DataUtil.new_entity());
 			goto("entity");
 		});
@@ -45,6 +41,7 @@ class EntityEditorMenu extends FlxMenu {
 		p.link("Quit", "!quit");
 
 		open(p);
+		focus();
 
 		p = newPage("entity");
 		p.link("Name", "name");
@@ -83,11 +80,11 @@ class EntityEditorMenu extends FlxMenu {
 		p = newPage("size");
 		p.callbacks = (type:String, data:String, item:MItemData) -> {
 			if (type == "change")
-				EntityEditorState.i.preview.load_from_data(get_entity_from_menu());
+				EntityEditorState.i.update_preview(null, get_entity_from_menu().size);
 		}
 		p.add("Width", {type: "slider", pool: [1, 1000], sid: "s-width"});
 		p.add("Height", {type: "slider", pool: [1, 1000], sid: "s-height"});
-		p.add("Depth", {type: "slider", pool: [1, 1000], sid: "depth"});
+		p.add("Depth", {type: "slider", pool: [0, 1000], sid: "depth"});
 		p.add("Offset", {type: "label"});
 		p.add("-X", {type: "slider", pool: [-1000, 1000], sid: "offset-x"});
 		p.add("-Y", {type: "slider", pool: [-1000, 1000], sid: "offset-y"});
@@ -169,13 +166,13 @@ class EntityEditorMenu extends FlxMenu {
 							// infoText.text = "Resuming game";
 							goHome();
 						case "refresh":
-						// EntityEditorState.i.preview.load_from_data(get_entity_from_menu());
+							var e = get_entity_from_menu();
+							EntityEditorState.i.update_preview(e.graphic, e.size);
 						case "save":
 							FileUtil.save_entities();
 							goHome();
 						case "quit":
-							FlxG.debugger.drawDebug = false;
-							FlxG.switchState(new MenuState());
+							FlxG.switchState(new EditorMenuState());
 						default:
 					}
 				default:
@@ -186,7 +183,8 @@ class EntityEditorMenu extends FlxMenu {
 	function update_entity() {
 		if (FileUtil.entities[EntityEditorState.i.current_entity] == null)
 			FileUtil.entities[EntityEditorState.i.current_entity] = DataUtil.new_entity();
-		DataTool.copyFields(get_entity_from_menu(), FileUtil.entities[EntityEditorState.i.current_entity]);
+		else
+			DataTool.copyFields(get_entity_from_menu(), FileUtil.entities[EntityEditorState.i.current_entity]);
 	}
 
 	function update_entity_menu(e:EntityData):Void {
@@ -242,7 +240,7 @@ class EntityEditorMenu extends FlxMenu {
 			el.link(FileUtil.entities[i].name, "@entity", () -> {
 				EntityEditorState.i.current_entity = i;
 				update_entity_menu(FileUtil.entities[i]);
-				EntityEditorState.i.preview.load_from_data(FileUtil.entities[i]);
+				EntityEditorState.i.update_preview(FileUtil.entities[i].graphic, FileUtil.entities[i].size);
 				EntityEditorState.i.preview.setPosition(4, 4);
 				EntityEditorState.i.preview.z = -EntityEditorState.i.preview.depth;
 				goto("entity");
@@ -257,7 +255,7 @@ class EntityEditorMenu extends FlxMenu {
 		var al = new PageData();
 		var as = FileUtil.entities[EntityEditorState.i.current_entity].animations;
 
-		if (as.length > 0) {
+		if (as != null && as.length > 0) {
 			for (i in 0...as.length) {
 				var a = as[i];
 				al.link(a.name, "@animation", () -> {
