@@ -1,5 +1,6 @@
 package boost.editors.common;
 
+import flixel.FlxState;
 import flixel.text.FlxText;
 import djFlixel.tool.DataTool;
 import djFlixel.gui.PanelPop;
@@ -12,17 +13,27 @@ import djFlixel.gui.menu.PageData;
 using djFlixel.gui.Styles;
 
 class EditorMenuState extends BaseState {
+	static var return_state:Class<FlxState>;
+	static var menu_items:Array<EditorMenuItem>;
+
 	var logo:FlxText;
 	var press_start:TextScroller;
 	var page:PageData;
 	var menu:FlxMenu;
 	var dialog:PanelPop;
 
+	public function new(?return_state:Class<FlxState>, ?menu_items:Array<EditorMenuItem>) {
+		super();
+		if (return_state != null)
+			EditorMenuState.return_state = return_state;
+		if (menu_items != null)
+			EditorMenuState.menu_items = menu_items;
+	}
+
 	override public function create():Void {
 		super.create();
 
 		BaseState.i = this;
-		persistentDraw = false;
 
 		var b = new BoxScroller("assets/images/bg-2.png", 0, 0, FlxG.width, FlxG.height, true);
 		b.autoScrollX = 0.3;
@@ -37,9 +48,12 @@ class EditorMenuState extends BaseState {
 		dialog = new PanelPop(FlxG.width.half(), FlxG.height.half(), 0xffd95763);
 		dialog.x += FlxG.width.half() - dialog.width.half();
 		dialog.y += logo.y + logo.height + 16;
+
 		menu = new FlxMenu(FlxG.width.half() - dialog.width.half() + 4, dialog.y + 4, Std.int(dialog.width - 8));
 		DataTool.copyFieldsC(FLS.JSON.editor.main.style, menu.styleMenu);
+
 		page = new PageData("editors");
+
 		add(logo);
 		add(press_start);
 		add(dialog);
@@ -62,16 +76,19 @@ class EditorMenuState extends BaseState {
 	function init():Void {
 		press_start.kill();
 
-		// register_menu_item("Map Editor", "maps", () -> {});
-		register_menu_item("Entity Editor", "entities", () -> {
-			FlxG.switchState(new EntityEditorState());
-		});
+		if (menu_items != null) {
+			for (menu_item in menu_items) {
+				register_menu_item(menu_item.label, menu_item.label, () -> {
+					FlxG.switchState(cast Type.createInstance(menu_item.state, []));
+				});
+			}
+		}
 		#if desktop
 		register_menu_item("Quit", "quit", () -> {
 			#if STANDALONE
 			lime.system.System.exit(0);
 			#else
-			close();
+			FlxG.switchState(cast Type.createInstance(return_state, []);
 			#end
 		});
 		#end
@@ -85,7 +102,13 @@ class EditorMenuState extends BaseState {
 		});
 	}
 
-	public function register_menu_item(label:String, SID:String, callback:Void->Void) {
+	function register_menu_item(label:String, SID:String, callback:Void->Void) {
 		page.link(label, SID, null, callback);
 	}
+}
+
+typedef EditorMenuItem = {
+	label:String,
+	SID:String,
+	state:Class<FlxState>
 }

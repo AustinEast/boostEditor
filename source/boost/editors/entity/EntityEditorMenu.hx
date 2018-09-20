@@ -115,9 +115,15 @@ class EntityEditorMenu extends FlxMenu {
 		p.addBack();
 
 		p = newPage("tags");
-		p.link("Add Tag", "add-tag");
-		p.link("Edit Tag", "edit-tag");
-		p.link("Remove Tag", "remove-tag");
+		p.link("Add Tag", "add-tag", () -> {
+			unfocus();
+			EntityEditorState.i.dialog.open_text("Tag Name", "", () -> {
+				FileUtil.tags.push(EntityEditorState.i.dialog.input.text);
+				focus();
+			});
+		});
+		p.link("Edit Tag", "edit-tag", () -> goto(new_tag_list(false), false));
+		p.link("Remove Tag", "remove-tag", () -> goto(new_tag_list(true), false));
 		p.addBack();
 	}
 
@@ -274,6 +280,27 @@ class EntityEditorMenu extends FlxMenu {
 		al.addBack();
 
 		return al;
+	}
+
+	function new_tag_list(remove:Bool):PageData {
+		var tl = new PageData();
+
+		for (i in 0...FileUtil.tags.length) {
+			tl.link(FileUtil.tags[i], "#tag", () -> {
+				unfocus();
+				if (remove)
+					FileUtil.tags.splice(i, 1);
+				else
+					EntityEditorState.i.dialog.open_text("Edit Tag", FileUtil.tags[i], () -> {
+						FileUtil.tags[i] = EntityEditorState.i.dialog.input.text;
+						focus();
+					});
+				goto("tags");
+			});
+		}
+		tl.addBack();
+
+		return tl;
 	}
 
 	function update_animation_menu(a:AnimationData) {

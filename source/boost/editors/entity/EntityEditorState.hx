@@ -10,6 +10,7 @@ import zero.flxutil.util.GameLog;
 import zero.flxutil.sprites.CheckerBoard;
 
 using flixel.util.FlxStringUtil;
+using boost.util.flx.FlxCameraUtil;
 
 class EntityEditorState extends BaseState {
 	public static var i:EntityEditorState;
@@ -33,7 +34,7 @@ class EntityEditorState extends BaseState {
 		BaseState.i = this;
 		FlxG.debugger.drawDebug = true;
 
-		double_camera_size();
+		FlxG.camera.double_size();
 		FlxG.camera.x += menu_width.half();
 		FlxG.camera.bgColor = 0xff6d74cf;
 		FlxG.camera.zoom = 3;
@@ -134,7 +135,6 @@ class EntityEditorState extends BaseState {
 					label = "Class: ";
 				case "frames":
 					label = "Frames: ";
-				// t
 				default:
 					label = "";
 			}
