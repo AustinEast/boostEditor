@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project>
+    <assets path="assets" rename="boostflx-editor" include="*.png|*.jpg|*.tmx|*.json" embed="true"/>
+    <assets path="assets/fonts" rename="boostflx-editor/fonts" include="*.ttf">
+			<font path="Eighties.ttf" id="fonts/eighties" embed="true"/>
+			<font path="Runners.ttf" id="fonts/runners" embed="true"/>
+		</assets>
+</project>

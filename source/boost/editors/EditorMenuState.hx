@@ -1,10 +1,9 @@
-package boost.editors.common;
+package boost.editors;
 
 import flixel.FlxState;
 import flixel.text.FlxText;
 import djFlixel.tool.DataTool;
 import djFlixel.gui.PanelPop;
-import djFlixel.CTRL;
 import djFlixel.fx.TextScroller;
 import djFlixel.gui.FlxMenu;
 import djFlixel.fx.BoxScroller;
@@ -24,10 +23,8 @@ class EditorMenuState extends BaseState {
 
 	public function new(?return_state:Class<FlxState>, ?menu_items:Array<EditorMenuItem>) {
 		super();
-		if (return_state != null)
-			EditorMenuState.return_state = return_state;
-		if (menu_items != null)
-			EditorMenuState.menu_items = menu_items;
+		EditorMenuState.return_state = return_state == null ? Type.getClass(FlxG.state) : return_state;
+		EditorMenuState.menu_items = menu_items;
 	}
 
 	override public function create():Void {
@@ -35,46 +32,37 @@ class EditorMenuState extends BaseState {
 
 		BaseState.i = this;
 
-		var b = new BoxScroller("assets/images/bg-2.png", 0, 0, FlxG.width, FlxG.height, true);
+		#if STANDALONE
+		FlxG.resizeWindow(960, 540);
+		#end
+
+		var b = new BoxScroller("boostflx-editor/images/bg-2.png", 0, 0, FlxG.width, FlxG.height, true);
 		b.autoScrollX = 0.3;
 		b.autoScrollY = 0.1;
 		add(b);
 
-		logo = new FlxText(0, FlxG.height.quarter() - FLS.JSON.editor.main.logo.fontSize / 2, FlxG.width, "BoostFlx");
+		FileUtil.init(init);
+	}
+
+	function init():Void {
+		logo = new FlxText(0, FlxG.height.quarter() - FileUtil.editor.main.logo.fontSize / 2, FlxG.width, "BoostFlx");
 		logo.alignment = CENTER;
-		logo.applyTextStyle(DataTool.copyFieldsC(FLS.JSON.editor.main.logo));
-		press_start = new TextScroller("Press Start", null, FLS.JSON.editor.main.press_start);
+		logo.applyTextStyle(DataTool.copyFieldsC(FileUtil.editor.main.logo));
+		// press_start = new TextScroller("Press Start", null, FileUtil.editor.main.press_start);
 
 		dialog = new PanelPop(FlxG.width.half(), FlxG.height.half(), 0xffd95763);
 		dialog.x += FlxG.width.half() - dialog.width.half();
 		dialog.y += logo.y + logo.height + 16;
 
 		menu = new FlxMenu(FlxG.width.half() - dialog.width.half() + 4, dialog.y + 4, Std.int(dialog.width - 8));
-		DataTool.copyFieldsC(FLS.JSON.editor.main.style, menu.styleMenu);
+		DataTool.copyFieldsC(FileUtil.editor.main.style, menu.styleMenu);
 
 		page = new PageData("editors");
 
 		add(logo);
-		add(press_start);
 		add(dialog);
 		add(menu);
 		add_toast();
-
-		#if STANDALONE
-		FlxG.resizeWindow(640, 360);
-		#end
-	}
-
-	override public function update(elapsed:Float):Void {
-		super.update(elapsed);
-
-		if (press_start.alive && FileUtil.init_check() || press_start.alive && (CTRL.CURSOR_OK() || FlxG.mouse.justReleased || FlxG.keys.justPressed.ENTER)) {
-			FileUtil.init(init);
-		}
-	}
-
-	function init():Void {
-		press_start.kill();
 
 		if (menu_items != null) {
 			for (menu_item in menu_items) {
@@ -88,7 +76,7 @@ class EditorMenuState extends BaseState {
 			#if STANDALONE
 			lime.system.System.exit(0);
 			#else
-			FlxG.switchState(cast Type.createInstance(return_state, []);
+			FlxG.switchState(cast Type.createInstance(return_state, []));
 			#end
 		});
 		#end

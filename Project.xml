@@ -22,7 +22,7 @@
 	<window if="html5" resizable="false" />
 
 	<!--Desktop-specific-->
-	<window if="desktop" orientation="landscape" fullscreen="false" resizable="false" />
+	<window if="desktop" orientation="landscape" fullscreen="false" resizable="true" />
 
 	<!--Mobile-specific-->
 	<window if="mobile" orientation="landscape" fullscreen="true" width="0" height="0" />
@@ -32,14 +32,14 @@
 	<set name="BUILD_DIR" value="export" />
 	<classpath name="source" />
 	<!--Graphics and Data-->
-	<assets path="assets" rename="assets" include="*.png|*.jpg|*.tmx|*.json"/>
+	<assets path="assets" rename="boostflx-editor" include="*.png|*.jpg|*.tmx|*.json"/>
 	<!-- SOUNDS -->
-	<assets path="assets/sounds" rename="sounds" include="*.mp3" if="flash" embed="true"/>
-	<assets path="assets/sounds" rename="sounds" include="*.ogg" unless="flash" embed="true"/>
+	<!-- <assets path="assets/sounds" rename="sounds" include="*.mp3" if="flash" embed="true"/> -->
+	<!-- <assets path="assets/sounds" rename="sounds" include="*.ogg" unless="flash" embed="true"/> -->
 	<!-- FONTS -->
-	<assets path="assets/fonts" rename="fonts" include="*.ttf">
-		<font path="Eighties.ttf" id="fonts/eighties"/>
-		<font path="Runners.ttf" id="fonts/runners"/>
+	<assets path="assets/fonts" rename="boostflx-editor/fonts" include="*.ttf">
+		<font path="Eighties.ttf" id="fonts/eighties" embed="true"/>
+		<font path="Runners.ttf" id="fonts/runners" embed="true"/>
 	</assets>
 
 	<set name="DJFLX_ICONS_8"/>

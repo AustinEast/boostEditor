@@ -9,25 +9,8 @@ import djFlixel.tool.DataTool;
 
 using flixel.util.FlxStringUtil;
 
-class EntityEditorMenu extends FlxMenu {
-	/**
-	 * Constructor
-	 * @param	Camera Camera to set the menu to
-	 * @param	X Screen X position, You cannot change this later
-	 * @param	Y Screen Y position, You cannot change this later
-	 * @param	WIDTH 0: Rest of the screen, -1: Center of the screen mirror to X
-	 * @param	SlotsTotal Maximum slots for pages, unless overrided by a page
-	 */
-	public function new(Camera:FlxCamera, X:Float, Y:Float, WIDTH:Int = 0, SlotsTotal:Int = 6) {
-		super(X, Y, WIDTH, SlotsTotal);
-		camera = Camera;
-		EntityEditorState.i.add(this);
-		DataTool.copyFieldsC(FLS.JSON.editor.entity.style, styleMenu);
-		init_pages();
-		init_callbacks();
-	}
-
-	function init_pages() {
+class EntityEditorMenu extends EditorMenu {
+	override function init_pages(?custom:Dynamic) {
 		var p = newPage('main');
 		p.link("Load Entity", "@entity-list", () -> goto(new_entity_list(), false));
 		p.link("New Entity", "@entity", () -> {
@@ -51,6 +34,8 @@ class EntityEditorMenu extends FlxMenu {
 		p.link("Size", "@size");
 		p.link("Graphic", "@graphic");
 		p.link("Animations", "@animations", () -> goto(new_animation_list(), false));
+		if (custom != null)
+			p.link("Custom", "@custom");
 		p.link("Update", "update");
 		p.link("Delete", "!delete");
 		p.link("Cancel", "!cancel");
@@ -127,7 +112,7 @@ class EntityEditorMenu extends FlxMenu {
 		p.addBack();
 	}
 
-	function init_callbacks() {
+	override function init_callbacks() {
 		callbacks = (type:String, data:String, item:MItemData) -> {
 			switch (type) {
 				case "change":

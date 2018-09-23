@@ -1,7 +1,6 @@
 package boost.editors.common;
 
-import djFlixel.gui.Toast;
-import lime.ui.FileDialogType;
+import openfl.utils.Assets;
 import lime.ui.FileDialog;
 import boost.system.DataTypes;
 import zero.flxutil.util.GameLog;
@@ -9,10 +8,10 @@ import zero.flxutil.util.GameLog;
 import haxe.Json;
 import sys.io.File;
 import sys.FileSystem;
-import djFlixel.tool.MacroHelp;
 #end
 
 class FileUtil {
+	public static var editor:Dynamic;
 	public static var levels:Array<LevelData>;
 	public static var entities:Array<EntityData>;
 	public static var tags:Array<String>;
@@ -27,6 +26,7 @@ class FileUtil {
 				callback();
 			return;
 		}
+		editor = Json.parse(Assets.getText("boostflx-editor/data/editor.json"));
 		#if (STANDALONE)
 		var fd = new FileDialog();
 		fd.onSelect.add((path) -> {
@@ -35,11 +35,9 @@ class FileUtil {
 			if (FileSystem.exists(project_path + xml_path)) {
 				file_check();
 				// Load Levels JSON
-				var json = File.getContent(project_path + data_path + "levels.json");
-				levels = Json.parse(json);
+				levels = Json.parse(File.getContent(project_path + data_path + "levels.json"));
 				// Load Entitites JSON
-				json = File.getContent(project_path + data_path + "entities.json");
-				var ej = Json.parse(json);
+				var ej = Json.parse(File.getContent(project_path + data_path + "entities.json"));
 				tags = ej.tags;
 				entities = ej.list;
 				initialized = true;
@@ -54,15 +52,16 @@ class FileUtil {
 		project_path = MacroHelp.getProjectPath();
 		file_check();
 
-		FLS.assets.add("assets/data/entities.json");
-		FLS.assets.add("assets/data/levels.json");
+		FLS.assets.add(data_path + "entities.json");
+		FLS.assets.add(data_path + "levels.json");
+		FLS.assets.add(data_path + "editor.json");
 		// FLS.assets.add("assets/data/tiles.json");
 
 		FLS.assets.loadFiles(() -> {
-			levels = FLS.assets.json.get("assets/data/levels.json");
+			levels = FLS.assets.json.get(data_path + "levels.json");
 			// GameLog.LOG("Adding levels to dynamic files list", INFO);
 
-			var ej = FLS.assets.json.get("assets/data/entities.json");
+			var ej = FLS.assets.json.get(data_path + "entities.json");
 			tags = ej.tags;
 			entities = ej.list;
 			GameLog.LOG("Adding entities graphics to dynamic files list", INFO);
